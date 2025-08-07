@@ -265,7 +265,6 @@ const Orders = ({ mode }) => {
   };
 
   const handleOpenReturnDialog = (orderId, item, idx) => {
-    console.log("Opening return dialog for:", { orderId, item, idx });
     setReturnItem({ orderId, item, idx });
     setReturnReason("");
     setReturnComment("");
@@ -273,7 +272,6 @@ const Orders = ({ mode }) => {
   };
 
   const handleCloseReturnDialog = () => {
-    console.log("Closing return dialog");
     setReturnDialogOpen(false);
     setReturnItem(null);
   };
