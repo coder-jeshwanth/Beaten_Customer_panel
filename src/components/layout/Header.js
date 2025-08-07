@@ -1,6 +1,16 @@
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
+import axios from "axios";
+import {
+  API_ENDPOINTS,
+  getApiConfig,
+  handleApiResponse,
+  handleApiError,
+} from "../../utils/api";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 import {
   AppBar,
@@ -313,7 +323,38 @@ const drawer = (
   </Box>
 );
 
-console.log(mode)
+ const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+
+useEffect(() => {
+    const fetchNotifications = async () => {
+      setLoading(true);
+      setError(null);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("You must be logged in to view notifications.");
+        setLoading(false);
+        return;
+      }
+      try {
+        const response = await axios(
+          getApiConfig(API_ENDPOINTS.USER_NOTIFICATIONS)
+        );
+        const data = handleApiResponse(response);
+        setNotifications(data.data || []);
+      } catch (err) {
+        setError(handleApiError(err).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNotifications();
+  }, []);
+
+
+
   return (
     <AppBar
       position="sticky"
@@ -496,23 +537,38 @@ console.log(mode)
             }}
           >
             {/* Wishlist Icon - only show on md and up */}
-            <IconButton
-              color="inherit"
-              onClick={() => navigate("/wishlist")}
-              sx={{ p: 1, display: { xs: "none", md: "flex" } }}
-            >
+            <IconButton  color="inherit" onClick={() => navigate("/wishlist")}  sx={{ p: 1, display: { xs: "none", md: "flex" } }} >
               <FavoriteBorderIcon sx={{ fontSize: 26 }} />
             </IconButton>
 
-<IconButton
-  color="inherit"
-  onClick={() => navigate("/notifications")}
-  sx={{ p: 1 }}
->
-  <Badge  color="error">
-    <NotificationsOutlinedIcon sx={{ fontSize: 26 }} />
-  </Badge>
-</IconButton>
+            {user && (
+  <>
+    {notifications.some((notif) => !notif.read) ? (
+      <IconButton
+        color="inherit"
+        onClick={() => navigate("/notifications")}
+        sx={{ p: 1 }}
+      >
+        <Badge
+          color="error"
+          variant="dot"
+          overlap="circular"
+        >
+          <NotificationsOutlinedIcon sx={{ fontSize: 26 }} />
+        </Badge>
+      </IconButton>
+    ) : (
+      <IconButton
+        color="inherit"
+        onClick={() => navigate("/notifications")}
+        sx={{ p: 1 }}
+      >
+        <NotificationsOutlinedIcon sx={{ fontSize: 26 }} />
+      </IconButton>
+    )}
+  </>
+)}
+
 
 
 

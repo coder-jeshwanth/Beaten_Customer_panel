@@ -463,7 +463,7 @@ const Home = ({ mode }) => {
           ))}
         </Box>
         {/* Learn More Button (Only on First Slide) */}
-        {currentSlide === 0 && (
+        {/* {currentSlide === 0 && (
           <Button
             variant="contained"
             size={isMobile ? "large" : "medium"}
@@ -497,7 +497,7 @@ const Home = ({ mode }) => {
           >
             LEARN MORE
           </Button>
-        )}
+        )} */}
         {/* Scroll to Content Arrow */}
         <Box
           onClick={scrollToContent}

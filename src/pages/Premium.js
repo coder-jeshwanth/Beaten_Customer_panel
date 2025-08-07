@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Container,
   Grid,
@@ -220,16 +220,121 @@ const Premium = ({ mode }) => {
     (user?.isPremium && new Date(user.premiumExpiry) > new Date()) ||
     (user?.subscription?.isSubscribed && new Date(user.subscription.subscriptionExpiry) > new Date());
 
+   const [timeLeft, setTimeLeft] = useState({
+       days: 0,
+       hours: 0,
+       minutes: 0,
+       seconds: 0,
+     });
+   
+     useEffect(() => {
+       const launchDate = new Date();
+       launchDate.setMonth(launchDate.getMonth() + 1);
+   
+       const interval = setInterval(() => {
+         const now = new Date();
+         const diff = launchDate - now;
+   
+         if (diff <= 0) {
+           clearInterval(interval);
+           setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+         } else {
+           const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+           const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+           const minutes = Math.floor((diff / (1000 * 60)) % 60);
+           const seconds = Math.floor((diff / 1000) % 60);
+           setTimeLeft({ days, hours, minutes, seconds });
+         }
+       }, 1000);
+   
+       return () => clearInterval(interval);
+     }, []);
+
+
   return (
     <Box
       sx={{
         bgcolor: mode === "dark" ? "#181818" : "#fff",
         color: mode === "dark" ? "#fff" : "inherit",
         minHeight: "100vh",
+         position: "relative" ,
         py: { xs: 4, md: 8 },
         transition: "background 0.3s, color 0.3s",
       }}
     >
+
+
+<Box
+  sx={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backdropFilter: "blur(8px)",
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    zIndex: 10,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+    textAlign: "center",
+    borderRadius: 2,
+  }}
+>
+  <Typography
+    variant="h4"
+    sx={{
+      color: "#181818",
+      fontWeight: 700,
+      mb: 1,
+      fontSize: { xs: "2.5rem", md: "3rem" },
+      textShadow: "0.5px 0.5px 1px rgba(0, 0, 0, 0.2)",
+    }}
+  >
+    {/* Optional title like: "Launching Soon" */}
+  </Typography>
+  <Typography
+    variant="subtitle1"
+    sx={{
+      color: "#181818",
+      fontWeight: 500,
+      fontSize: { xs: "1.5rem", md: "2rem" },
+      mb: 2,
+      textShadow: "0.5px 0.5px 1px rgba(0, 0, 0, 0.2)",
+    }}
+  >
+    {`${timeLeft.days}d ${timeLeft.hours}h ${timeLeft.minutes}m ${timeLeft.seconds}s`}
+  </Typography>
+  <Typography
+    variant="h5"
+    sx={{
+      color: "#D4AF37",
+      fontWeight: 700,
+      fontSize: { xs: "1.8rem", md: "2.2rem" },
+      mb: 1,
+      textShadow: "0.5px 0.5px 1px #000",
+    }}
+  >
+    BEATEN CLUB LAUNCHING SOON
+  </Typography>
+  <Typography
+    variant="body1"
+    sx={{
+      color: "#D4AF37",
+      fontWeight: 500,
+      fontSize: { xs: "1.1rem", md: "1.3rem" },
+      maxWidth: "80%",
+      textShadow: "0.5px 0.5px 1px #000",
+    }}
+  >
+    An Offer Never Seen in the Indian Clothing Industry.
+    <br />
+    Coming Soon to BEATEN. Stay tuned.
+  </Typography>
+</Box>
+
+
       <Container maxWidth="lg">
         {/* Hero Section */}
         <Box
