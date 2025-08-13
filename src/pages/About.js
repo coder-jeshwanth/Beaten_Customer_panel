@@ -85,7 +85,7 @@ const About = ({ mode }) => {
   const [aboutData, setAboutData] = useState({
     aboutContent: "",
     storyContent: "",
-    image: "",
+    image: "/public/images/Artboard 2-100.jpg",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -267,8 +267,7 @@ const About = ({ mode }) => {
                   <Box
                     component="img"
                     src={
-                      aboutData.image ||
-                      "https://via.placeholder.com/500x300?text=No+Image"
+                      "/Beaten/companylogo.jpg"
                     }
                     alt="Beaten Fashion"
                     sx={{

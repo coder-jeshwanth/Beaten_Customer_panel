@@ -276,7 +276,7 @@ const Premium = ({ mode }) => {
     zIndex: 10,
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "top",
     flexDirection: "column",
     textAlign: "center",
     borderRadius: 2,
@@ -287,6 +287,7 @@ const Premium = ({ mode }) => {
     sx={{
       color: "#181818",
       fontWeight: 700,
+      mt:14,
       mb: 1,
       fontSize: { xs: "2.5rem", md: "3rem" },
       textShadow: "0.5px 0.5px 1px rgba(0, 0, 0, 0.2)",
