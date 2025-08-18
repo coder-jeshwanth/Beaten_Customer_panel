@@ -134,6 +134,8 @@ const Home = ({ mode }) => {
           },
         });
 
+        console.log(response.data)
+
         if (response.data && response.data.data) {
           const profile = response.data.data;
           const subscription = profile.subscription || {
@@ -661,9 +663,41 @@ const Home = ({ mode }) => {
                           >
                             {product.name}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            ₹{product.price}
-                          </Typography>
+                          
+
+  {/* Original Price (Strikethrough) */}
+  <Typography
+    variant="body2"
+    color="text.secondary"
+    sx={{ textDecoration: "line-through" }}
+  >
+    ₹{product.originalPrice}
+  </Typography>
+
+  <Typography
+  variant="body2"
+  color="text.secondary"
+  sx={{ fontWeight: "bold", fontSize: "18px" }}
+>
+  ₹{product.price}
+</Typography>
+
+
+  {/* Discount Percentage */}
+  {product.originalPrice > product.price && (
+    <Typography
+      variant="body2"
+      color="error"
+      fontWeight="bold"
+    >
+      {Math.round(
+        ((product.originalPrice - product.price) /
+          product.originalPrice) *
+          100
+      )}
+      % OFF
+    </Typography>
+  )}
                         </CardContent>
                       </Card>
                     </Box>
@@ -848,9 +882,39 @@ const Home = ({ mode }) => {
                           >
                             {product.name}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            ₹{product.price}
-                          </Typography>
+                            {/* Original Price (Strikethrough) */}
+  <Typography
+    variant="body2"
+    color="text.secondary"
+    sx={{ textDecoration: "line-through" }}
+  >
+    ₹{product.originalPrice}
+  </Typography>
+
+  <Typography
+  variant="body2"
+  color="text.secondary"
+  sx={{ fontWeight: "bold", fontSize: "18px" }}
+>
+  ₹{product.price}
+</Typography>
+
+
+  {/* Discount Percentage */}
+  {product.originalPrice > product.price && (
+    <Typography
+      variant="body2"
+      color="error"
+      fontWeight="bold"
+    >
+      {Math.round(
+        ((product.originalPrice - product.price) /
+          product.originalPrice) *
+          100
+      )}
+      % OFF
+    </Typography>
+  )}
                         </CardContent>
                       </Card>
                     </Box>
@@ -1036,9 +1100,39 @@ const Home = ({ mode }) => {
                           >
                             {product.name}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            ₹{product.price}
-                          </Typography>
+                           {/* Original Price (Strikethrough) */}
+  <Typography
+    variant="body2"
+    color="text.secondary"
+    sx={{ textDecoration: "line-through" }}
+  >
+    ₹{product.originalPrice}
+  </Typography>
+
+  <Typography
+  variant="body2"
+  color="text.secondary"
+  sx={{ fontWeight: "bold", fontSize: "18px" }}
+>
+  ₹{product.price}
+</Typography>
+
+
+  {/* Discount Percentage */}
+  {product.originalPrice > product.price && (
+    <Typography
+      variant="body2"
+      color="error"
+      fontWeight="bold"
+    >
+      {Math.round(
+        ((product.originalPrice - product.price) /
+          product.originalPrice) *
+          100
+      )}
+      % OFF
+    </Typography>
+  )}
                         </CardContent>
                       </Card>
                     </Box>
@@ -1345,19 +1439,39 @@ const Home = ({ mode }) => {
                                   />
                                 ))}
                             </Box>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              sx={{
-                                fontSize: {
-                                  xs: "0.82rem",
-                                  sm: "0.92rem",
-                                  md: "1rem",
-                                },
-                              }}
-                            >
-                              ₹{product.price}
-                            </Typography>
+                              {/* Original Price (Strikethrough) */}
+  <Typography
+    variant="body2"
+    color="text.secondary"
+    sx={{ textDecoration: "line-through" }}
+  >
+    ₹{product.originalPrice}
+  </Typography>
+
+  <Typography
+  variant="body2"
+  color="text.secondary"
+  sx={{ fontWeight: "bold", fontSize: "18px" }}
+>
+  ₹{product.price}
+</Typography>
+
+
+  {/* Discount Percentage */}
+  {product.originalPrice > product.price && (
+    <Typography
+      variant="body2"
+      color="error"
+      fontWeight="bold"
+    >
+      {Math.round(
+        ((product.originalPrice - product.price) /
+          product.originalPrice) *
+          100
+      )}
+      % OFF
+    </Typography>
+  )}
                           </CardContent>
                         </Card>
                       </Box>

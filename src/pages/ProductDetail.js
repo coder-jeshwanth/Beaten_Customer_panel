@@ -449,16 +449,41 @@ const ProductDetail = ({ mode }) => {
                 )}
               </Typography>
 
-              <Typography
-                variant="h4"
-                sx={{
-                  fontWeight: 700,
-                  mb: 3,
-                  color: mode === "dark" ? "#fff" : matteColors[900],
-                }}
-              >
-                ₹{product.price.toLocaleString()}
-              </Typography>
+                {/* Original Price (Strikethrough) */}
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ textDecoration: "line-through" }}
+                >
+                  ₹{product.originalPrice}
+                </Typography>
+              
+               <Box display="flex" sx={{mb:2}} alignItems="center" gap={1}>
+  <Typography
+    variant="h4"
+    sx={{
+      fontWeight: 700,
+      color: mode === "dark" ? "#fff" : matteColors[900],
+    }}
+  >
+    ₹{product.price}
+  </Typography>
+
+  {product.originalPrice > product.price && (
+    <Typography
+      variant="body2"
+      color="error"
+      fontWeight="bold"
+    >
+      {Math.round(
+        ((product.originalPrice - product.price) /
+          product.originalPrice) *
+          100
+      )}
+      % OFF
+    </Typography>
+  )}
+</Box>
 
               {/* Color Selector */}
               <Box sx={{ mb: 3 }}>

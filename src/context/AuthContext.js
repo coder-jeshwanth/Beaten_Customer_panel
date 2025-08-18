@@ -83,10 +83,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post(
-        buildApiUrl(API_ENDPOINTS.REGISTER),
-        userData
-      );
+      const response = await axios.post( buildApiUrl(API_ENDPOINTS.REGISTER), userData );
       const { token, user } = response.data.data;
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
