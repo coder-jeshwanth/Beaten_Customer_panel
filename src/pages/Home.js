@@ -23,8 +23,6 @@ import {
   Star as StarIcon,
 } from "@mui/icons-material";
 import {
-  heroSlides,
-  mobileHeroSlides,
   collectionsData,
   features,
 } from "../data/mockData";
@@ -54,6 +52,11 @@ const Home = ({ mode }) => {
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Banner/Hero images states
+  const [heroImages, setHeroImages] = useState([]);
+  const [mobileHeroImages, setMobileHeroImages] = useState([]);
+  const [bannerLoading, setBannerLoading] = useState(true);
 
   // User profile states
   const [userProfile, setUserProfile] = useState(null);
@@ -85,8 +88,10 @@ const Home = ({ mode }) => {
     "co-ord-sets": useRef(null),
   };
 
-  // Use imported hero slides data
-  const slides = isMobile ? mobileHeroSlides : heroSlides;
+  // Use dynamic hero slides data from API
+  const slides = isMobile ? 
+    mobileHeroImages.map(image => ({ image })) : 
+    heroImages.map(image => ({ image }));
 
   // Use imported collections data
   const collections = collectionsData;
@@ -110,6 +115,46 @@ const Home = ({ mode }) => {
       icon: <StarIcon sx={{ fontSize: 40 }} />,
     },
   ];
+
+  // Fetch banner images from API
+  useEffect(() => {
+    const fetchBannerImages = async () => {
+      try {
+        setBannerLoading(true);
+        
+        // Fetch desktop/hero slide images
+        const heroResponse = await axios.get(
+          buildApiUrl(API_ENDPOINTS.SLIDE_IMAGES("68764ef87d492357106bb01d"))
+        );
+        
+        if (heroResponse.data && heroResponse.data.slideImages) {
+          setHeroImages(heroResponse.data.slideImages);
+        }
+
+        // Fetch mobile slide images
+        const mobileResponse = await axios.get(
+          buildApiUrl(API_ENDPOINTS.MOBIEL_SLIDE_IMAGES("68764ef87d492357106bb01d"))
+        );
+        
+        if (mobileResponse.data && mobileResponse.data.slideImages) {
+          setMobileHeroImages(mobileResponse.data.slideImages);
+        } else {
+          // Fallback to desktop images if mobile images not available
+          setMobileHeroImages(heroResponse.data.slideImages || []);
+        }
+        
+      } catch (err) {
+        console.error("Error fetching banner images:", err);
+        // Keep arrays empty on error - component will handle gracefully
+        setHeroImages([]);
+        setMobileHeroImages([]);
+      } finally {
+        setBannerLoading(false);
+      }
+    };
+
+    fetchBannerImages();
+  }, []);
 
   // Fetch user profile and check subscription status
   useEffect(() => {
@@ -413,57 +458,102 @@ const Home = ({ mode }) => {
           bgcolor: "black",
         }}
       >
-        {slides.map((slide, index) => (
+        {bannerLoading ? (
+          // Loading state for banner
           <Box
-            key={index}
             sx={{
               position: "absolute",
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
-              opacity: currentSlide === index ? 1 : 0,
-              transition: "opacity 0.5s ease-in-out",
-              backgroundImage: `url(${slide.image})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              width: "100%",
-              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              bgcolor: mode === "dark" ? "#181818" : "#f5f5f5",
             }}
-          />
-        ))}
-        {/* Slide Indicators */}
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: 40,
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            gap: 1,
-            zIndex: 3,
-          }}
-        >
-          {slides.map((_, index) => (
+          >
+            <CircularProgress sx={{ color: mode === "dark" ? "#fff" : "#000" }} />
+          </Box>
+        ) : slides.length > 0 ? (
+          // Render slides if available
+          slides.map((slide, index) => (
             <Box
               key={index}
-              onClick={() => setCurrentSlide(index)}
               sx={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                backgroundColor:
-                  currentSlide === index ? "white" : "rgba(255,255,255,0.5)",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  backgroundColor: "white",
-                },
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                opacity: currentSlide === index ? 1 : 0,
+                transition: "opacity 0.5s ease-in-out",
+                backgroundImage: `url(${slide.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                width: "100%",
+                height: "100%",
               }}
             />
-          ))}
-        </Box>
+          ))
+        ) : (
+          // Fallback when no slides available
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              bgcolor: mode === "dark" ? "#181818" : "#f5f5f5",
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{ color: mode === "dark" ? "#fff" : "#000" }}
+            >
+              No banner images available
+            </Typography>
+          </Box>
+        )}
+        
+        {/* Slide Indicators - Only show if slides are available */}
+        {!bannerLoading && slides.length > 1 && (
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 40,
+              left: "50%",
+              transform: "translateX(-50%)",
+              display: "flex",
+              gap: 1,
+              zIndex: 3,
+            }}
+          >
+            {slides.map((_, index) => (
+              <Box
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                sx={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  backgroundColor:
+                    currentSlide === index ? "white" : "rgba(255,255,255,0.5)",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    backgroundColor: "white",
+                  },
+                }}
+              />
+            ))}
+          </Box>
+        )}
         {/* Learn More Button (Only on First Slide) */}
         {/* {currentSlide === 0 && (
           <Button

@@ -836,7 +836,10 @@ const ProductDetail = ({ mode }) => {
                   <AccordionDetails sx={{ bgcolor: mode === "dark" ? "#222" : "#fff" }}>
                     <Typography
                       variant="body2"
-                      sx={{ color: mode === "dark" ? "#ccc" : matteColors[700] }}
+                      sx={{ 
+                        color: mode === "dark" ? "#ccc" : matteColors[700],
+                        textAlign: 'justify'
+                      }}
                     >
                       {product.description}
                     </Typography>
@@ -861,12 +864,65 @@ const ProductDetail = ({ mode }) => {
                     </Typography>
                   </AccordionSummary>
                   <AccordionDetails sx={{ bgcolor: mode === "dark" ? "#222" : "#fff" }}>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: mode === "dark" ? "#ccc" : matteColors[700] }}
-                    >
-                      {product.material}
-                    </Typography>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                      {product.specifications?.Material && (
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontWeight: 700, // Bold
+                            color: mode === "dark" ? "#fff" : matteColors[900],
+                          }}
+                        >
+                          {product.specifications.Material}
+                        </Typography>
+                      )}
+                      {product.specifications?.Care && (
+                        <Typography
+                          variant="body2"
+                          sx={{ 
+                            fontWeight: 600, // Semi-bold
+                            color: mode === "dark" ? "#ccc" : matteColors[700] 
+                          }}
+                        >
+                          {product.specifications.Care}
+                        </Typography>
+                      )}
+                      {product.specifications?.Fit && (
+                        <Typography
+                          variant="body2"
+                          sx={{ 
+                            fontWeight: 700, // Bold
+                            color: mode === "dark" ? "#fff" : matteColors[900],
+                            mt: 1
+                          }}
+                        >
+                          {product.specifications.Fit}
+                        </Typography>
+                      )}
+                      {product.specifications?.Origin && (
+                        <Typography
+                          variant="body2"
+                          sx={{ 
+                            fontWeight: 600, // Semi-bold
+                            color: mode === "dark" ? "#ccc" : matteColors[700],
+                            mt: 0.5
+                          }}
+                        >
+                          {product.specifications.Origin}
+                        </Typography>
+                      )}
+                      {!product.specifications?.Material && 
+                       !product.specifications?.Care &&
+                       !product.specifications?.Fit &&
+                       !product.specifications?.Origin && (
+                        <Typography
+                          variant="body2"
+                          sx={{ color: mode === "dark" ? "#ccc" : matteColors[700] }}
+                        >
+                          No material and care information available.
+                        </Typography>
+                      )}
+                    </Box>
                   </AccordionDetails>
                 </Accordion>
               </Box>
