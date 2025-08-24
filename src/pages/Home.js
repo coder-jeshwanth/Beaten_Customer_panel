@@ -133,11 +133,11 @@ const Home = ({ mode }) => {
 
         // Fetch mobile slide images
         const mobileResponse = await axios.get(
-          buildApiUrl(API_ENDPOINTS.MOBIEL_SLIDE_IMAGES("68764ef87d492357106bb01d"))
+          buildApiUrl(API_ENDPOINTS.MOBILE_SLIDE_IMAGES("68764ef87d492357106bb01d"))
         );
         
-        if (mobileResponse.data && mobileResponse.data.slideImages) {
-          setMobileHeroImages(mobileResponse.data.slideImages);
+        if (mobileResponse.data && mobileResponse.data.mobileSlideImages) {
+          setMobileHeroImages(mobileResponse.data.mobileSlideImages);
         } else {
           // Fallback to desktop images if mobile images not available
           setMobileHeroImages(heroResponse.data.slideImages || []);

@@ -84,7 +84,7 @@ export const API_ENDPOINTS = {
   // DataEntry
   NEWS_CONTENT: (id) => `/data-entry/${id}/news-content`,
   SLIDE_IMAGES: (id) => `/data-entry/${id}/slide-images`,
-  MOBIEL_SLIDE_IMAGES: (id) => `/data-entry/${id}/mobile-slide-images`,
+  MOBILE_SLIDE_IMAGES: (id) => `/data-entry/${id}/mobile-slide-images`,
   COLLECTION_IMAGES: (id) => `/data-entry/${id}/collection-images`,
   MOBILE_COLLECTION_IMAGES: (id) => `/data-entry/${id}/mobile-collection-images`,
   COLLECTIONS: (id) => `/data-entry/${id}/collections`,
