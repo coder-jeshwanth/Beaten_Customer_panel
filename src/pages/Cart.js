@@ -21,6 +21,7 @@ import {
   Tooltip,
   useTheme,
   useMediaQuery,
+  CircularProgress,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -42,8 +43,15 @@ const FALLBACK_IMAGE =
   'data:image/svg+xml;utf8,<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><rect fill="%23f5f5f5" width="200" height="200"/><text x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-size="20">Image</text></svg>';
 
 const getImageUrl = (imagePath) => {
-  if (!imagePath) return FALLBACK_IMAGE;
+  if (!imagePath) {
+    console.log("No image path provided, using fallback");
+    return FALLBACK_IMAGE;
+  }
+  
+  console.log("Processing image path:", imagePath);
+  
   if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    console.log("Using HTTP/HTTPS URL directly:", imagePath);
     return imagePath;
   }
   if (imagePath.startsWith("blob:")) {
@@ -56,8 +64,90 @@ const getImageUrl = (imagePath) => {
   if (imagePath.startsWith("/")) {
     return imagePath;
   }
+  
+  // Check if it's a Cloudinary image filename (usually ends with common image extensions)
+  if (imagePath.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+    const cloudinaryUrl = `https://res.cloudinary.com/di9lv1bgh/image/upload/v1755963041/beaten-products/${imagePath}`;
+    console.log("Generated Cloudinary URL:", cloudinaryUrl);
+    return cloudinaryUrl;
+  }
+  
   // Otherwise, treat as uploaded file
-  return `${buildApiUrl("")}/uploads/${imagePath}`;
+  const finalUrl = `${buildApiUrl("")}/uploads/${imagePath}`;
+  console.log("Generated upload URL:", finalUrl);
+  return finalUrl;
+};
+
+const ProductImage = ({ product, sx }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [currentSrc, setCurrentSrc] = useState("");
+
+  useEffect(() => {
+    const imageUrl = getImageUrl(product.image);
+    setCurrentSrc(imageUrl);
+    setImageLoaded(false);
+    setImageError(false);
+  }, [product.image]);
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    console.log("Image failed to load:", currentSrc);
+    setImageError(true);
+    setImageLoaded(false);
+    setCurrentSrc(FALLBACK_IMAGE);
+  };
+
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        width: { xs: 90, sm: 110 },
+        height: { xs: 90, sm: 110 },
+        borderRadius: 3,
+        overflow: "hidden",
+        backgroundColor: "#f5f5f5",
+        border: "1px solid #eee",
+        ...sx,
+      }}
+    >
+      <CardMedia
+        component="img"
+        src={currentSrc}
+        alt={product.name}
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+        sx={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          transition: "opacity 0.3s ease",
+          opacity: imageLoaded ? 1 : 0,
+        }}
+      />
+      {!imageLoaded && !imageError && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#f5f5f5",
+          }}
+        >
+          <CircularProgress size={24} />
+        </Box>
+      )}
+    </Box>
+  );
 };
 
 const Cart = ({ mode }) => {
@@ -245,8 +335,12 @@ const Cart = ({ mode }) => {
             Shopping Cart
           </Typography>
           <Box>
-            {cart.map((item, idx) =>
-              !item.product || typeof item.product.price !== "number" ? null : (
+            {cart.map((item, idx) => {
+              console.log("Cart item:", item);
+              console.log("Cart item product:", item.product);
+              console.log("Cart item product image:", item.product?.image);
+              
+              return !item.product || typeof item.product.price !== "number" ? null : (
                 <Card
                   key={item.product._id + item.size + item.color}
                   sx={{
@@ -264,20 +358,12 @@ const Cart = ({ mode }) => {
                   }}
                 >
                   {/* Product Image */}
-                  <Box
-                    component="img"
-                    src={getImageUrl(item.product.image)}
-                    alt={item.product.name}
+                  <ProductImage 
+                    product={item.product}
                     sx={{
-                      width: { xs: 90, sm: 110 },
-                      height: { xs: 90, sm: 110 },
-                      objectFit: "cover",
-                      borderRadius: 3,
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
                       mr: { sm: 3 },
                       mb: { xs: 2, sm: 0 },
-                      background: "#f5f5f5",
-                      border: "1px solid #eee",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
                     }}
                   />
                   {/* Product Details & Actions */}
@@ -430,8 +516,8 @@ const Cart = ({ mode }) => {
                     </Box>
                   </Box>
                 </Card>
-              )
-            )}
+              );
+            })}
           </Box>
         </Grid>
         {/* Order Summary */}
