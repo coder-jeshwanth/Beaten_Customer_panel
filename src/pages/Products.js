@@ -1470,6 +1470,7 @@ const Products = ({ mode }) => {
                                   alignItems: "center",
                                   gap: 1,
                                   mb: viewMode === "grid" ? 0.5 : 1,
+                                  flexWrap: "wrap",
                                 }}
                               >
                                 <Typography
@@ -1483,6 +1484,20 @@ const Products = ({ mode }) => {
                                 >
                                   {formatPrice(product.price)}
                                 </Typography>
+                                {product.originalPrice && product.originalPrice > product.price && (
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{
+                                      fontWeight: 400,
+                                      textDecoration: "line-through",
+                                      fontSize: "0.9rem",
+                                      ml: 0.5,
+                                    }}
+                                  >
+                                    {formatPrice(product.originalPrice)}
+                                  </Typography>
+                                )}
                                 {product.discount && (
                                   <Typography
                                     variant="body2"
