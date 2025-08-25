@@ -72,9 +72,28 @@ const statusStyles = {
 };
 
 const getImageUrl = (img) => {
-  if (!img) return PLACEHOLDER_IMAGE;
-  if (img.startsWith("http")) return img;
-  if (img.startsWith("photo-")) return `https://images.unsplash.com/${img}`;
+  if (!img) {
+    console.log("No image path provided, using placeholder");
+    return PLACEHOLDER_IMAGE;
+  }
+  
+  console.log("Processing image path:", img);
+  
+  if (img.startsWith("http")) {
+    console.log("Using HTTP/HTTPS URL directly:", img);
+    return img;
+  }
+  if (img.startsWith("photo-")) {
+    return `https://images.unsplash.com/${img}`;
+  }
+  
+  // Check if it's a Cloudinary image filename (usually ends with common image extensions)
+  if (img.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+    const cloudinaryUrl = `https://res.cloudinary.com/di9lv1bgh/image/upload/v1755963041/beaten-products/${img}`;
+    console.log("Generated Cloudinary URL:", cloudinaryUrl);
+    return cloudinaryUrl;
+  }
+  
   return `/images/${img}`;
 };
 
@@ -598,7 +617,7 @@ const Orders = ({ mode }) => {
                           mb: 0.5,
                         }}
                       >
-                        Order #{order._id}
+                        Order #{order.orderId || order._id}
                       </Typography>
                       <Typography
                         variant="body2"
@@ -835,7 +854,7 @@ const Orders = ({ mode }) => {
                         mb: 0.5,
                       }}
                     >
-                      Order #{order._id}
+                      Order #{order.orderId || order._id}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -1107,7 +1126,7 @@ const Orders = ({ mode }) => {
           {selectedOrder && (
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>
-                Order #{selectedOrder._id}
+                Order #{selectedOrder.orderId || selectedOrder._id}
               </Typography>
               <Typography variant="body2" sx={{ mb: 1 }}>
                 Placed on: {new Date(selectedOrder.createdAt).toLocaleDateString()}
