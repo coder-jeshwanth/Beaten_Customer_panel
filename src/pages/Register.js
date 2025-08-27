@@ -35,7 +35,12 @@ const validationSchema = Yup.object({
     .email("Invalid email address")
     .required("Email is required"),
   password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
+    .min(8, "Password must be at least 8 characters")
+    .matches(/^(?=.*[a-z])/, "Password must contain at least one lowercase letter")
+    .matches(/^(?=.*[A-Z])/, "Password must contain at least one uppercase letter")
+    .matches(/^(?=.*\d)/, "Password must contain at least one number")
+    .matches(/^(?=.*[@$!%*?&])/, "Password must contain at least one special character (@, $, !, %, *, ?, &)")
+    .max(128, "Password cannot exceed 128 characters")
     .required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password"), null], "Passwords must match")
@@ -58,6 +63,67 @@ const Register = ({ mode }) => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Password validation function with toaster messages
+  const validatePasswordRequirements = (password) => {
+    const requirements = [
+      {
+        test: password.length >= 8,
+        message: "Password must be at least 8 characters long"
+      },
+      {
+        test: /[a-z]/.test(password),
+        message: "Password must contain at least one lowercase letter"
+      },
+      {
+        test: /[A-Z]/.test(password),
+        message: "Password must contain at least one uppercase letter"
+      },
+      {
+        test: /\d/.test(password),
+        message: "Password must contain at least one number"
+      },
+      {
+        test: /[@$!%*?&]/.test(password),
+        message: "Password must contain at least one special character (@, $, !, %, *, ?, &)"
+      }
+    ];
+
+    const failedRequirements = requirements.filter(req => !req.test);
+    
+    if (failedRequirements.length > 0) {
+      // Show all failed requirements in a single toast
+      const messages = failedRequirements.map(req => `• ${req.message}`).join('\n');
+      toast.error(`Password Requirements:\n${messages}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        style: {
+          whiteSpace: 'pre-line'
+        }
+      });
+      return false;
+    }
+    return true;
+  };
+
+  // Handle password change with real-time validation
+  const handlePasswordChange = (e) => {
+    formik.handleChange(e);
+    const password = e.target.value;
+    
+    // Only validate if user has typed at least 3 characters to avoid spam
+    if (password.length >= 3 && password.length < 8) {
+      setTimeout(() => {
+        if (password === formik.values.password) { // Check if password hasn't changed
+          validatePasswordRequirements(password);
+        }
+      }, 1000); // Debounce for 1 second
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -74,6 +140,23 @@ const Register = ({ mode }) => {
         setLoading(true);
         setError("");
         setSuccess("");
+        
+        // Validate password requirements before submission
+        if (!validatePasswordRequirements(values.password)) {
+          setLoading(false);
+          return;
+        }
+
+        // Check if passwords match
+        if (values.password !== values.confirmPassword) {
+          toast.error("Passwords do not match!", {
+            position: "top-right",
+            autoClose: 3000,
+          });
+          setLoading(false);
+          return;
+        }
+
         const response = await register({
           name: values.name,
           email: values.email,
@@ -259,9 +342,20 @@ const Register = ({ mode }) => {
               label="Password"
               type="password"
               value={formik.values.password}
-              onChange={formik.handleChange}
+              onChange={handlePasswordChange}
+              onBlur={(e) => {
+                formik.handleBlur(e);
+                // Validate password on blur if there's a value
+                if (e.target.value && e.target.value.length > 0) {
+                  validatePasswordRequirements(e.target.value);
+                }
+              }}
               error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
+              helperText={
+                formik.touched.password && formik.errors.password ? 
+                formik.errors.password : 
+                "Password must contain: 8+ characters, uppercase, lowercase, number, special character"
+              }
               margin="normal"
               InputProps={{
                 startAdornment: <LockIcon sx={{ color: "action.active", mr: 1 }} />,
