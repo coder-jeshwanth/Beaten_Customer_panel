@@ -835,10 +835,13 @@ const ProductDetail = ({ mode }) => {
                   </AccordionSummary>
                   <AccordionDetails sx={{ bgcolor: mode === "dark" ? "#222" : "#fff" }}>
                     <Typography
-                      variant="body2"
+                      variant="body1"
+                      paragraph
                       sx={{ 
                         color: mode === "dark" ? "#ccc" : matteColors[700],
-                        textAlign: 'justify'
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        fontFamily: 'inherit'
                       }}
                     >
                       {product.description}
