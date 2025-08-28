@@ -106,7 +106,16 @@ const Checkout = ({ mode = "dark" }) => {
         new Date(user.subscription.subscriptionExpiry) > new Date()
       ? 249
       : 0;
-  const shipping = subtotal > 0 ? 100 : 0;
+  
+  // Calculate shipping based on subscription status
+  const shipping = subtotal > 0 
+    ? (user?.subscription?.isSubscribed && 
+       new Date(user.subscription.subscriptionExpiry) > new Date()
+       ? 0  // Free shipping for subscribed members
+       : 40 // ₹40 for non-subscribed members
+      )
+    : 0;
+  
   const total = subtotal - discount + shipping;
   const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
 
