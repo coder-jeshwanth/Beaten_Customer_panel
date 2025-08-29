@@ -557,7 +557,27 @@ const Cart = ({ mode }) => {
             <Box
               sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
             >
-              <Typography sx={{ color: cardColors.text }}>Shipping</Typography>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography sx={{ color: cardColors.text, mr: 1 }}>Shipping</Typography>
+                {shipping === 0 && (
+                  <Box 
+                    component="span" 
+                    sx={{ 
+                      backgroundColor: "#D4AF37", // Golden color
+                      color: "#000000", // Black text
+                      fontSize: "0.7rem",
+                      fontWeight: 800,
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1,
+                      display: "inline-block",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    BEATEN Club
+                  </Box>
+                )}
+              </Box>
               <Typography sx={{ color: cardColors.text }}>
                 {shipping === 0 ? "Free" : formatPrice(shipping)}
               </Typography>
